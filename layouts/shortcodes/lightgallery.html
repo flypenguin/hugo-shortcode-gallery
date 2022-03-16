@@ -9,7 +9,15 @@
 {{- $thumbsize    := or   (.Get "thumbsize")    .Site.Params.lightgallery.defaults.thumbsize    "200x200"   }}
 {{- $thumbtype    := or   (.Get "thumbtype")    .Site.Params.lightgallery.defaults.thumbtype    "fit"       }}
 {{- $transition   := or   (.Get "transition")   .Site.Params.lightgallery.defaults.transition   "lg-slide"  }}
-{{- with .Get "glob" }}{{ $imgs = $.Page.Resources.Match . }}{{ else }}{{ $imgs = $.Page.Resources.ByType "image" }}{{ end }}
+{{- with .Get "glob" }}
+    {{- $imgs = $.Page.Resources.Match . }}
+{{- else }}
+    {{- with .Get "assets" }}
+        {{- $imgs = resources.Match . }}
+    {{- else }}
+        {{- $imgs = $.Page.Resources.ByType "image" }}
+    {{- end }}
+{{- end }}
 {{- with .Get "plugins" }}{{ $plugins = union $plugins (split . " ") }}{{ end }}
 {{- if or (eq $id "lightgallery") (in $flags "load") }}
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.4.0/css/lightgallery-bundle.min.css" />
@@ -26,7 +34,7 @@
 {{- end }}
 <div id="{{ $id }}">
     {{- range $imgs }}{{ $current := . }}
-    <a data-src="{{ . | safeHTML }}">
+    <a data-src="{{ .RelPermalink }}">
         {{- $alt := strings.TrimSuffix (path.Ext .) (path.Base .) }}
         {{- $params := (printf "%s %s %s" $thumbsize $thumbquality $thumbformat) }}
         {{- with $scope.Get "altslice" }}{{ $alt = strings.TrimRight " " (strings.TrimLeft " " (slicestr $alt . )) }}{{ end }}
