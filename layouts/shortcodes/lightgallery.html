@@ -1,0 +1,52 @@
+{{- $scope := . }}
+{{- $flags := split (or (.Get "flags") "") " " }}
+{{- $id := or (.Get "id") "lightgallery" }}
+{{- $imgs := slice }}
+{{- $plugins := union .Site.Params.lightgallery.defaults.plugins .Page.Params.lightgallery.plugins }}
+{{- $speed := or (.Get "speed") .Site.Params.lightgallery.defaults.speed 500 }}
+{{- $thumbformat := or (.Get "thumbformat") "webp" }}
+{{- $thumbquality := or (.Get "thumbquality") "q75" }}
+{{- $thumbsize := or (.Get "thumbsize") "200x200" }}
+{{- $thumbtype := or (.Get "thumbtype") "fit" }}
+{{- $transition := or (.Get "transition")
+                      (and .Site.Params.lightgallery .Site.Params.lightgallery.defaults .Site.Params.lightgallery.defaults.transition)
+                      "lg-slide" }}
+{{- with .Get "glob" }}{{ $imgs = $.Page.Resources.Match . }}{{ else }}{{ $imgs = $.Page.Resources.ByType "image" }}{{ end }}
+{{- with .Get "plugins" }}{{ $plugins = union $plugins (split . " ") }}{{ end }}
+{{- if or (eq $id "lightgallery") (in $flags "load") }}
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.4.0/css/lightgallery-bundle.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.4.0/lightgallery.min.js"></script>
+    {{- if $plugins }}
+        {{- range $plugins }}
+            {{- $pluginFileName := . }}
+            {{- if eq . "relativeCaption"}}{{ $pluginFileName := "relative-caption" }}{{- end }}
+            {{- if eq . "mediumZoom"}}{{ $pluginFileName := "medium-zoom" }}{{- end }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.4.0/plugins/{{ . }}/lg-{{ $pluginFileName }}.min.js"></script>
+        {{- end }}
+    {{- end }}
+
+{{- end }}
+<div id="{{ $id }}">
+    {{- range $imgs }}{{ $current := . }}
+    <a data-src="{{ . | safeHTML }}">
+        {{- $alt := strings.TrimSuffix (path.Ext .) (path.Base .) }}
+        {{- $params := (printf "%s %s %s" $thumbsize $thumbquality $thumbformat) }}
+        {{- with $scope.Get "altslice" }}{{ $alt = strings.TrimRight " " (strings.TrimLeft " " (slicestr $alt . )) }}{{ end }}
+        {{- if eq $thumbtype "fit" }}
+        <img src="{{ (.Fit $params).RelPermalink }}" alt="{{ $alt }}" />
+        {{- else if eq $thumbtype "fill" }}
+        <img src="{{ (.Fill $params).RelPermalink }}" alt="{{ $alt }}" />
+        {{- end }}
+    </a>
+    {{- end }}
+</div>
+<script type="text/javascript">
+    lightGallery(document.getElementById('{{ $id }}'), {
+        {{- if (in $plugins "thumbnail") }}
+        thumbnail: true,
+        {{- end }}
+        mode: {{ $transition }},
+        speed: {{ $speed }},
+        licenseKey: '{{ or .Site.Params.lightgallery.license_key "0000-0000-000-0000" }}'
+    });
+</script>
