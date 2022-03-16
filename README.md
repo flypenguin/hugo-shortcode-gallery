@@ -35,4 +35,4 @@ path = "github.com/flypenguin/hugo-shortcode-gallery"
 
 ## Usage
 
-There will be a showcase page with all the information.
+Please go see the [showcase page](https://hugo-gallery-shortcode-demo.netlify.app/) (or its [GitHub repo](https://github.com/flypenguin/hugo-shortcode-gallery)) for documentation and exmaples.
