@@ -3,14 +3,12 @@
 {{- $id := or (.Get "id") "lightgallery" }}
 {{- $imgs := slice }}
 {{- $plugins := union .Site.Params.lightgallery.defaults.plugins .Page.Params.lightgallery.plugins }}
-{{- $speed := or (.Get "speed") .Site.Params.lightgallery.defaults.speed 500 }}
-{{- $thumbformat := or (.Get "thumbformat") "webp" }}
-{{- $thumbquality := or (.Get "thumbquality") "q75" }}
-{{- $thumbsize := or (.Get "thumbsize") "200x200" }}
-{{- $thumbtype := or (.Get "thumbtype") "fit" }}
-{{- $transition := or (.Get "transition")
-                      (and .Site.Params.lightgallery .Site.Params.lightgallery.defaults .Site.Params.lightgallery.defaults.transition)
-                      "lg-slide" }}
+{{- $speed        := or   (.Get "speed")        .Site.Params.lightgallery.defaults.speed        500         }}
+{{- $thumbformat  := or   (.Get "thumbformat")  .Site.Params.lightgallery.defaults.thumbformat  "webp"      }}
+{{- $thumbquality := or   (.Get "thumbquality") .Site.Params.lightgallery.defaults.thumbquality "q70"       }}
+{{- $thumbsize    := or   (.Get "thumbsize")    .Site.Params.lightgallery.defaults.thumbsize    "200x200"   }}
+{{- $thumbtype    := or   (.Get "thumbtype")    .Site.Params.lightgallery.defaults.thumbtype    "fit"       }}
+{{- $transition   := or   (.Get "transition")   .Site.Params.lightgallery.defaults.transition   "lg-slide"  }}
 {{- with .Get "glob" }}{{ $imgs = $.Page.Resources.Match . }}{{ else }}{{ $imgs = $.Page.Resources.ByType "image" }}{{ end }}
 {{- with .Get "plugins" }}{{ $plugins = union $plugins (split . " ") }}{{ end }}
 {{- if or (eq $id "lightgallery") (in $flags "load") }}
