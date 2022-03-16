@@ -1,6 +1,8 @@
 {{- $scope := . }}
+{{- $.Page.Scratch.Add "lightgallerycounter" 1 }}
 {{- $flags := split (or (.Get "flags") "") " " }}
-{{- $id := or (.Get "id") "lightgallery" }}
+{{- $lightgallerycounter := $.Page.Scratch.Get "lightgallerycounter" }}
+{{- $id := (printf "fp-hugo-gallery-%d" $lightgallerycounter) }}
 {{- $imgs := slice }}
 {{- $plugins := union .Site.Params.lightgallery.defaults.plugins .Page.Params.lightgallery.plugins }}
 {{- $speed        := or   (.Get "speed")        .Site.Params.lightgallery.defaults.speed        500         }}
@@ -19,7 +21,7 @@
     {{- end }}
 {{- end }}
 {{- with .Get "plugins" }}{{ $plugins = union $plugins (split . " ") }}{{ end }}
-{{- if or (eq $id "lightgallery") (in $flags "load") }}
+{{- if eq $lightgallerycounter 1 }}
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.4.0/css/lightgallery-bundle.min.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lightgallery/2.4.0/lightgallery.min.js"></script>
     {{- if $plugins }}
